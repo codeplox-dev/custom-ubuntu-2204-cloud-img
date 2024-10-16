@@ -1,0 +1,27 @@
+#cloud-config
+ssh_pwauth: False
+
+users:
+- name: 'ssh-user'
+  groups: users,sudo
+  shell: /bin/bash
+  lock_passwd: true
+  ssh_authorized_keys:
+%{ for pubkey in pub_keys ~}
+    - "${pubkey}"
+%{ endfor ~}
+  sudo: ALL=(ALL) NOPASSWD:ALL
+
+ssh_keys:
+  rsa_private: "${ssh_privkey}"
+  rsa_public: ${ssh_pubkey}
+
+ssh_authorized_keys:
+  - ${ssh_pubkey}
+
+disable_root: true
+allow_public_ssh_keys: true
+ssh_deletekeys: true
+
+write_files:
+- path: /ssh-user/CLOUD_INIT_WAS_HERE

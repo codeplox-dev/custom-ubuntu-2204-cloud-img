@@ -15,7 +15,7 @@ Install required deps and build image:
 ./install_packer_and_build.sh
 ```
 
-After, to boot:
+After, e.g. to boot:
 
 ```bash
 sudo qemu-img convert -O qcow2 output/custom-ubuntu-22.04-x86_64 /var/lib/libvirt/images/ubuntu-image.qcow2

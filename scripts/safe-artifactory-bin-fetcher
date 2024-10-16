@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+export ARTIF_REPO="... your artif repo name ..."
+export ARTIF_EP="... your artif endpoint ..."
+
+rm_netrc(){ local curdir=$1
+    rm -f "${curdir}/.netrc" || true
+}
+
+check_required_user_vars(){
+    if [ -z "${ARTIF_USER-}" ] || [ -z "${ARTIF_TOK-}" ]; then
+        echo "ERR - must set ARTIF_USER_PATH and ARTIF_ACCESS_TOKEN_PATH to files containing values."
+        exit 1
+    fi
+}
+
+get_artif_tok(){
+    echo "${ARTIF_TOK}"
+}
+
+get_artif_user(){
+    echo "${ARTIF_USER}"
+}
+
+stub_netrc_file() { local curdir=$1
+    [ -f "${curdir}/.netrc" ] && { echo "ERR - .netrc file already exists!"; exit 1; }
+
+    cat <<-EOF > "${curdir}/.netrc"
+machine REPLACE_WITH_YOUR_MACHINE_NAME
+login ARTIF_USER
+password ARTIF_TOK
+EOF
+
+    sed -i "s/ARTIF_USER/$(get_artif_user)/g" "${curdir}/.netrc"
+    sed -i "s/ARTIF_TOK/$(get_artif_tok)/g" "${curdir}/.netrc"
+}
+
+main(){ local to_fetch="${1}"
+    local curdir
+    curdir="$(pwd)"
+    check_required_user_vars
+
+    trap "rm_netrc ${curdir}" EXIT
+
+    if command -v jf &>/dev/null; then
+        CI=true jf rt dl --access-token "$(get_artif_tok)" --url ${ARTIF_EP} ${to_fetch}
+    elif command -v curl &>/dev/null; then
+        stub_netrc_file "${curdir}" && curl --netrc-file "${curdir}/.netrc" "${ARTIF_EP}/${to_fetch}" -O && rm ${curdir}/.netrc || rm ${curdir}/.netrc
+    else
+        echo "ERR - Must have one of [jfrog CLI | curl] installed"
+        exit 1
+    fi
+}
+
+
+if [[ "${1-}" == "" ]]; then
+    echo "ERR - must pass '<repository>/<package_path>' as sole argument"
+    exit 1
+fi
+
+main "${1}"

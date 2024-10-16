@@ -1,0 +1,38 @@
+{
+  "apt": [
+    "debootstrap",
+    "dkms",
+    "fio",
+    "frr",
+    "iptables-persistent",
+    "linux-headers-generic",
+    "net-tools",
+    "qemu-guest-agent",
+    "screen",
+    "sysstat",
+    "systemd-container",
+    "ubuntu-minimal"
+  ],
+  "genericbin": [],
+  "nopurge": [
+    "cloud-init*",
+    "dkms",
+    "fio",
+    "frr",
+    "ifupdown",
+    "iptables-persistent",
+    "linux-generic",
+    "linux-headers*",
+    "linux-headers-generic",
+    "linux-headers-kvm",
+    "linux-kvm-headers*",
+    "net-tools",
+    "openssh-server",
+    "qemu-guest-agent",
+    "screen",
+    "sysstat",
+    "systemd",
+    "systemd-container",
+    "ubuntu-minimal"
+  ]
+}
