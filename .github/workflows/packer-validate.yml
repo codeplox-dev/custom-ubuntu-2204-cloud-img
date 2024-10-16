@@ -40,9 +40,6 @@ jobs:
       - name: make
         shell: bash
         run: |
-          rm -rf /opt/hostedtoolcache
-          cd /opt
-          find . -maxdepth 1 -mindepth 1 '!' -path ./containerd '!' -path ./actionarchivecache '!' -path ./runner '!' -path ./runner-cache -exec rm -rf '{}' ';'
           make build-and-publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
