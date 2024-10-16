@@ -77,8 +77,8 @@ END
 
 check_user_vars(){
     local unset=0
-    if [[ "${GITHUB_TOKEN-}" == "" ]]; then
-        echo "ERR - must set GITHUB_TOKEN to GH token"
+    if [[ "${GH_TOKEN-}" == "" ]]; then
+        echo "ERR - must set GH_TOKEN to GH token"
         unset=1
     fi
     if [[ "${unset}" != "0" ]]; then
@@ -148,7 +148,7 @@ publish(){ local img="${1}"
     sum=$(${SUDO}awk '{print $1}' "${img_sum}")
 
     echo "${RELEASENOTES}" > "notes.md"
-    #gh auth login --hostname github.com --with-token <<< "${GITHUB_TOKEN}"
+    #gh auth login --hostname github.com --with-token <<< "${GH_TOKEN}"
     gh release create -t "Custom Ubu 22.04 cloud img v$(cat VERSION)" -F notes.md "$(cat VERSION)" "${img}" "${img_sum}"
     rm notes.md
     # Upload $img to artifactory, COS, etc
