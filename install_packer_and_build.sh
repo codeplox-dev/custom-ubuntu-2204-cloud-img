@@ -77,8 +77,8 @@ END
 
 check_user_vars(){
     local unset=0
-    if [[ "${GH_TOK-}" == "" ]]; then
-        echo "ERR - must set GH_TOK to GH token"
+    if [[ "${GH_TOKEN-}" == "" ]]; then
+        echo "ERR - must set GH_TOKEN to GH token"
         unset=1
     fi
     if [[ "${unset}" != "0" ]]; then
@@ -147,9 +147,8 @@ publish(){ local img="${1}"
     sha256sum "${img}" | ${SUDO}tee "${img_sum}"
     sum=$(${SUDO}awk '{print $1}' "${img_sum}")
 
-
     echo "${RELEASENOTES}" > "notes.md"
-    gh auth login --hostname github.com --with-token <<< "${GH_TOK}"
+    #gh auth login --hostname github.com --with-token <<< "${GH_TOKEN}"
     gh release create -t "Custom Ubu 22.04 cloud img v$(cat VERSION)" -F notes.md "$(cat VERSION)" "${img}" "${img_sum}"
     rm notes.md
     # Upload $img to artifactory, COS, etc
@@ -161,8 +160,9 @@ main(){
     if [[ "${PUBLISH_IMG-}" == "1" ]]; then
         check_user_vars
         check_pub_tools
+        user=$(whoami)
         sudo mkdir -p ~/.config/gh
-        sudo chown -R bob:bob ~/.config/gh
+        sudo chown -R ${user}:${user} ~/.config/gh
     fi
 
     install_packer
@@ -172,11 +172,12 @@ main(){
     PACKER_LOG=1 ${SUDO}packer build ubu2204_jammy.pkr.hcl
 
     ${SUDO}qemu-img convert -O qcow2 ${OUT_DIR}/${IMG} ${OUTPUT_QCOW}
-    ${SUDO}qemu-img resize -f qcow2 ${OUTPUT_QCOW} 32G
+    ${SUDO}qemu-img resize -f qcow2 ${OUTPUT_QCOW} 16G
+    ${SUDO}virt-sparsify --in-place ${OUTPUT_QCOW}
     ${SUDO}virt-sparsify --compress ${OUTPUT_QCOW} ${OUTPUT_QCOW_COMPRESSED}
     echo -e "\n\n==> FINISHED!! Output image: ${OUTPUT_QCOW_COMPRESSED}"
 
-    if [[ "${PUBLISH_IMG-}" == "1" ]]; then
+    if [[ "${PUBLISH_IMG-}" == "1" && "${BRANCH_NAME:-}" == "master" ]]; then
         publish "${OUTPUT_QCOW_COMPRESSED}"
     fi
 }

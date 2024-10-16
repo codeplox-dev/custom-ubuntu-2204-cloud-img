@@ -1,0 +1,45 @@
+name: Image
+
+on: push
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  PRODUCT_VERSION: "latest"
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
+jobs:
+  packer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: ${{ env.PRODUCT_VERSION }}
+      - name: Enable KVM group perms
+        run: |
+            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger --name-match=kvm
+      - name: cleanout some runner space for stuff not used in this project
+        shell: bash
+        run: |
+          rm -rf /opt/hostedtoolcache
+          cd /opt
+          find . -maxdepth 1 -mindepth 1 '!' -path ./containerd '!' -path ./actionarchivecache '!' -path ./runner '!' -path ./runner-cache -exec rm -rf '{}' ';'
+      - name: make
+        shell: bash
+        run: |
+          make build-and-publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
