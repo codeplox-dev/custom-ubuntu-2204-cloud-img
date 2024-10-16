@@ -160,8 +160,9 @@ main(){
     if [[ "${PUBLISH_IMG-}" == "1" ]]; then
         check_user_vars
         check_pub_tools
+        user=$(whoami)
         sudo mkdir -p ~/.config/gh
-        sudo chown -R bob:bob ~/.config/gh
+        sudo chown -R ${user}:${user} ~/.config/gh
     fi
 
     install_packer
