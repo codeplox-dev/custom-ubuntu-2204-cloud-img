@@ -77,8 +77,8 @@ END
 
 check_user_vars(){
     local unset=0
-    if [[ "${GH_TOK-}" == "" ]]; then
-        echo "ERR - must set GH_TOK to GH token"
+    if [[ "${GITHUB_TOKEN-}" == "" ]]; then
+        echo "ERR - must set GITHUB_TOKEN to GH token"
         unset=1
     fi
     if [[ "${unset}" != "0" ]]; then
@@ -147,9 +147,8 @@ publish(){ local img="${1}"
     sha256sum "${img}" | ${SUDO}tee "${img_sum}"
     sum=$(${SUDO}awk '{print $1}' "${img_sum}")
 
-
     echo "${RELEASENOTES}" > "notes.md"
-    gh auth login --hostname github.com --with-token <<< "${GH_TOK}"
+    #gh auth login --hostname github.com --with-token <<< "${GITHUB_TOKEN}"
     gh release create -t "Custom Ubu 22.04 cloud img v$(cat VERSION)" -F notes.md "$(cat VERSION)" "${img}" "${img_sum}"
     rm notes.md
     # Upload $img to artifactory, COS, etc
@@ -176,7 +175,7 @@ main(){
     ${SUDO}virt-sparsify --compress ${OUTPUT_QCOW} ${OUTPUT_QCOW_COMPRESSED}
     echo -e "\n\n==> FINISHED!! Output image: ${OUTPUT_QCOW_COMPRESSED}"
 
-    if [[ "${PUBLISH_IMG-}" == "1" ]]; then
+    if [[ "${PUBLISH_IMG-}" == "1" && "${BRANCH_NAME:-}" == "master" ]]; then
         publish "${OUTPUT_QCOW_COMPRESSED}"
     fi
 }

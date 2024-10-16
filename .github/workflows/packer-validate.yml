@@ -8,10 +8,13 @@ concurrency:
 
 env:
   PRODUCT_VERSION: "latest"
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   packer:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -31,4 +34,6 @@ jobs:
       - name: make
         shell: bash
         run: |
-          make
+          make build-and-publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
