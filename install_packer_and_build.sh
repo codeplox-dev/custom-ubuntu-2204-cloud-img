@@ -173,7 +173,7 @@ main(){
 
     ${SUDO}qemu-img convert -O qcow2 ${OUT_DIR}/${IMG} ${OUTPUT_QCOW}
     ${SUDO}qemu-img resize -f qcow2 ${OUTPUT_QCOW} 8G
-    #${SUDO}virt-sparsify --in-place ${OUTPUT_QCOW}
+    ${SUDO}virt-sparsify --in-place ${OUTPUT_QCOW}
     ${SUDO}virt-sparsify --compress ${OUTPUT_QCOW} ${OUTPUT_QCOW_COMPRESSED}
     echo -e "\n\n==> FINISHED!! Output image: ${OUTPUT_QCOW_COMPRESSED}"
 
