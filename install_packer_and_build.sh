@@ -173,7 +173,8 @@ main(){
 
     ${SUDO}qemu-img convert -O qcow2 ${OUT_DIR}/${IMG} ${OUTPUT_QCOW}
     ${SUDO}qemu-img resize -f qcow2 ${OUTPUT_QCOW} 32G
-    ${SUDO}virt-sparsify --in-place --compress ${OUTPUT_QCOW} ${OUTPUT_QCOW_COMPRESSED}
+    ${SUDO}virt-sparsify --in-place ${OUTPUT_QCOW}
+    ${SUDO}virt-sparsify --compress ${OUTPUT_QCOW} ${OUTPUT_QCOW_COMPRESSED}
     echo -e "\n\n==> FINISHED!! Output image: ${OUTPUT_QCOW_COMPRESSED}"
 
     if [[ "${PUBLISH_IMG-}" == "1" && "${BRANCH_NAME:-}" == "master" ]]; then
