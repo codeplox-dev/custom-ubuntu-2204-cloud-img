@@ -21,12 +21,12 @@ fi
 
 RELEASENOTES=$(cat <<-END
 To install:
-1. Download
+1. Download the following assets from the bottom of this release page:
 
     * **${QCOW_IMG}_compressed.qcow2**
     * **${QCOW_IMG}_compressed.qcow2.sha256sum**
 
-    Can check the package validity before continuing on like so:
+    Check the package validity before continuing on like so:
 
     \`\`\`bash
     # Make sure you are in the same directory as the ${QCOW_IMG}_compressed.qcow2
@@ -38,29 +38,17 @@ To install:
 
     \`\`\`bash
     sudo mv ${QCOW_IMG}_compressed.qcow2 /var/lib/libvirt/images/customjammy.qcow2
-
-    sudo virt-install \\
-
-      --connect qemu:///system \\
-
-      --name customjammy \\
-
-      --memory 2048 \\
-
-      --vcpus 2 \\
-
-      --os-variant ubuntu22.04 \\
-
-      --disk path=/var/lib/libvirt/images/customjammy.qcow2,bus=virtio \\
-
-      --import \\
-
-      --noautoconsole \\
-
-      --network network=default,model=virtio \\
-
-      --graphics none \\
-
+    sudo virt-install \\\\
+      --connect qemu:///system \\\\
+      --name customjammy \\\\
+      --memory 2048 \\\\
+      --vcpus 2 \\\\
+      --os-variant ubuntu22.04 \\\\
+      --disk path=/var/lib/libvirt/images/customjammy.qcow2,bus=virtio \\\\
+      --import \\\\
+      --noautoconsole \\\\
+      --network network=default,model=virtio \\\\
+      --graphics none \\\\
       --console pty,target_type=serial
     \`\`\`
 
@@ -68,7 +56,6 @@ To install:
 
     \`\`\`bash
     sudo virsh domifaddr customjammy
-
     ssh -i <priv_key_path> ssh-user@<addr>
     \`\`\`
 END

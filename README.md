@@ -2,12 +2,26 @@
 
 > Custom Ubuntu 22.04 image as sample for Packer usage
 
-## Docs: TODO
+## About
 
-### Reqs
+This repo is an example of building a custom qcow based VM image by customizing
+an [upstream Ubuntu 22.04 cloud image](https://cloud-images.ubuntu.com/releases/22.04/).
+
+Image build and publication happens automatically on PR merge via GitHub actions
+for free.
+
+Resulting image is published as a GitHub release asset after the merge commit.
+
+See the [releases page](https://github.com/codeplox-dev/custom-ubuntu-2204-cloud-img/releases)
+for the latest info.
+
+---
+
+### Local development
+
+Reqs:
 
 - Machine w/ Qemu/KVM (tested on Ubuntu 22.04 IBM Cloud VM).
-- ??
 
 Install required deps and build image:
 
@@ -51,7 +65,7 @@ sudo virsh destroy ubuntu-image
 sudo virsh undefine ubuntu-image
 ```
 
-### Misc
+#### Misc
 
 Keep [external-deps-and-pkgs.json](./external-deps-and-pkgs.json) sorted with:
 
